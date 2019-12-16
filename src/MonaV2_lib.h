@@ -37,22 +37,32 @@
 #define LED_D3				23
 
 //Battery Voltage
-#define Batt_Vol_pin			33 //Analog read of the Battery Voltage
+#define Batt_Vol_pin		33 //Analog read of the Battery Voltage
+
+/* ----General Definitions for MonaV2----*/
+#define Mot_freq			5000
+#define Mot_res				8
+#define Mot_rig_for_pwm		0
+#define Mot_rig_bac_pwm		1
+#define Mot_lef_for_pwm		2
+#define Mot_lef_bac_pwm		3
 
 /* ----Library functions definitions for MonaV2 in C style----*/
 //Mona Init function - setup pinModes
 void MonaV2_init(void);
 //Right Motor
-void Right_mot_forward(void);
-void Right_mot_backward(void);
+void Right_mot_forward(int speed);
+void Right_mot_backward(int speed);
 void Right_mot_stop(void);
 //Left Motor
-void Left_mot_forward(void);
-void Left_mot_backward(void);
+void Left_mot_forward(int speed);
+void Left_mot_backward(int speed);
 void Left_mot_stop(void);
 //Both motors
-void Motors_forward(void);
-void Motors_backward(void);
+void Motors_forward(int speed);
+void Motors_backward(int speed);
+void Motors_spin_left(int speed);
+void Motors_spin_right(int speed);
 void Motors_stop(void);
 //IR sensors
 void Enable_IR(void);
@@ -75,16 +85,18 @@ class MonaV2
   //Mona constructor function - setup pinModes
   	MonaV2(void);
   //Right Motor
-    void Right_mot_forward(void);
-    void Right_mot_backward(void);
+    void Right_mot_forward(int speed);
+    void Right_mot_backward(int speed);
 	void Right_mot_stop(void);
   //Left Motor
-    void Left_mot_forward(void);
-    void Left_mot_backward(void);
+    void Left_mot_forward(int speed);
+    void Left_mot_backward(int speed);
 	void Left_mot_stop(void);
   //Both motors
-    void Motors_forward(void);
-    void Motors_backward(void);
+    void Motors_forward(int speed);
+    void Motors_backward(int speed);
+    void Motors_spin_left(int speed);
+	void Motors_spin_right(int speed);
 	void Motors_stop(void);
   //IR sensors
   	void Enable_IR(void);

@@ -19,11 +19,23 @@ void MonaV2_init(void){
 	pinMode(IR_enable, OUTPUT);				//IR enable output
 	pinMode(LED_D2, OUTPUT);				//LED output
 	pinMode(LED_D3, OUTPUT);				//LED output
+	//Setup PWM channels for motors
+	ledcSetup(Mot_rig_for_pwm,Mot_freq,Mot_res);
+	ledcAttachPin(Mot_right_forward, Mot_rig_for_pwm);//PWM settings MRF
+	
+	ledcSetup(Mot_rig_bac_pwm,Mot_freq,Mot_res);
+	ledcAttachPin(Mot_right_backward, Mot_rig_bac_pwm);//PWM settings MRB
+	
+	ledcSetup(Mot_lef_for_pwm,Mot_freq,Mot_res);
+	ledcAttachPin(Mot_left_forward, Mot_lef_for_pwm);//PWM settings MLF
+	
+	ledcSetup(Mot_lef_bac_pwm,Mot_freq,Mot_res);
+	ledcAttachPin(Mot_left_backward, Mot_lef_bac_pwm);//PWM settings MLB
 	//Turn off the Motor
-    digitalWrite(Mot_right_forward,LOW);
-    digitalWrite(Mot_right_backward,LOW);
-    digitalWrite(Mot_left_forward,LOW);
-    digitalWrite(Mot_left_backward,LOW);
+	ledcWrite(Mot_rig_for_pwm, 0);
+	ledcWrite(Mot_rig_bac_pwm, 0);
+	ledcWrite(Mot_lef_for_pwm, 0);
+	ledcWrite(Mot_lef_bac_pwm, 0);
     //Disable IR to save energy
     digitalWrite(IR_enable,LOW);
     //Turn OFF LEDs
@@ -32,44 +44,66 @@ void MonaV2_init(void){
 }
 //TODO : Add PWM values to the motor speeds
 //Right Motor
-void Right_mot_forward(void){
-	digitalWrite(Mot_right_forward,HIGH);
-    digitalWrite(Mot_right_backward,LOW);
+void Right_mot_forward(int speed){
+	if(speed>255){
+		speed = 255; //Limit max speed to the 8 bit resolution
+	}
+	ledcWrite(Mot_rig_for_pwm, speed);
+	ledcWrite(Mot_rig_bac_pwm, 0);
 }
 
-void Right_mot_backward(void){
-	digitalWrite(Mot_right_forward,LOW);
-    digitalWrite(Mot_right_backward,HIGH);
+void Right_mot_backward(int speed){
+	if(speed>255){
+		speed = 255; //Limit max speed to the 8 bit resolution
+	}
+	ledcWrite(Mot_rig_for_pwm, 0);
+	ledcWrite(Mot_rig_bac_pwm, speed);
 }
 
 void Right_mot_stop(void){
-	digitalWrite(Mot_right_forward,LOW);
-    digitalWrite(Mot_right_backward,LOW);
+	ledcWrite(Mot_rig_for_pwm, 0);
+	ledcWrite(Mot_rig_bac_pwm, 0);
 }
 //Left Motor
-void Left_mot_forward(void){
-	digitalWrite(Mot_left_forward,HIGH);
-    digitalWrite(Mot_left_backward,LOW);
+void Left_mot_forward(int speed){
+	if(speed>255){
+		speed = 255; //Limit max speed to the 8 bit resolution
+	}
+	ledcWrite(Mot_lef_for_pwm, speed);
+	ledcWrite(Mot_lef_bac_pwm, 0);
 }
 
-void Left_mot_backward(void){
-	digitalWrite(Mot_left_forward,LOW);
-    digitalWrite(Mot_left_backward,HIGH);
+void Left_mot_backward(int speed){
+	if(speed>255){
+		speed = 255; //Limit max speed to the 8 bit resolution
+	}
+	ledcWrite(Mot_lef_for_pwm, 0);
+	ledcWrite(Mot_lef_bac_pwm, speed);
 }
 void Left_mot_stop(void){
-	digitalWrite(Mot_left_forward,LOW);
-    digitalWrite(Mot_left_backward,LOW);
+	ledcWrite(Mot_lef_for_pwm, 0);
+	ledcWrite(Mot_lef_bac_pwm, 0);
 }
 
 //Both motors
-void Motors_forward(void){
-	Right_mot_forward();
-	Left_mot_forward();
+void Motors_forward(int speed){
+	Right_mot_forward(speed);
+	Left_mot_forward(speed);
 }
 
-void Motors_backward(void){
-	Right_mot_backward();
-	Left_mot_backward();
+void Motors_backward(int speed){
+	Right_mot_backward(speed);
+	Left_mot_backward(speed);
+}
+
+void Motors_spin_left(int speed){
+	Right_mot_forward(speed);
+	Left_mot_backward(speed);
+}
+
+void Motors_spin_right(int speed){
+	Right_mot_backward(speed);
+	Left_mot_forward(speed);
 }
 
 void Motors_stop(void){
@@ -146,11 +180,23 @@ MonaV2::MonaV2(void){
 	pinMode(IR_enable, OUTPUT);				//IR enable output
 	pinMode(LED_D2, OUTPUT);				//LED output
 	pinMode(LED_D3, OUTPUT);				//LED output
+	//Setup PWM channels for motors
+	ledcSetup(Mot_rig_for_pwm,Mot_freq,Mot_res);
+	ledcAttachPin(Mot_right_forward, Mot_rig_for_pwm);//PWM settings MRF
+	
+	ledcSetup(Mot_rig_bac_pwm,Mot_freq,Mot_res);
+	ledcAttachPin(Mot_right_backward, Mot_rig_bac_pwm);//PWM settings MRB
+	
+	ledcSetup(Mot_lef_for_pwm,Mot_freq,Mot_res);
+	ledcAttachPin(Mot_left_forward, Mot_lef_for_pwm);//PWM settings MLF
+	
+	ledcSetup(Mot_lef_bac_pwm,Mot_freq,Mot_res);
+	ledcAttachPin(Mot_left_backward, Mot_lef_bac_pwm);//PWM settings MLB
 	//Turn off the Motor
-    digitalWrite(Mot_right_forward,LOW);
-    digitalWrite(Mot_right_backward,LOW);
-    digitalWrite(Mot_left_forward,LOW);
-    digitalWrite(Mot_left_backward,LOW);
+	ledcWrite(Mot_rig_for_pwm, 0);
+	ledcWrite(Mot_rig_bac_pwm, 0);
+	ledcWrite(Mot_lef_for_pwm, 0);
+	ledcWrite(Mot_lef_bac_pwm, 0);
     //Disable IR to save energy
     digitalWrite(IR_enable,LOW);
     //Turn OFF LEDs
@@ -159,44 +205,66 @@ MonaV2::MonaV2(void){
 }
 //TODO : Add PWM values to the motor speeds
 //Right Motor
-void MonaV2::Right_mot_forward(void){
-	digitalWrite(Mot_right_forward,HIGH);
-    digitalWrite(Mot_right_backward,LOW);
+void MonaV2::Right_mot_forward(int speed){
+	if(speed>255){
+		speed = 255; //Limit max speed to the 8 bit resolution
+	}
+	ledcWrite(Mot_rig_for_pwm, speed);
+	ledcWrite(Mot_rig_bac_pwm, 0);
 }
 
-void MonaV2::Right_mot_backward(void){
-	digitalWrite(Mot_right_forward,LOW);
-    digitalWrite(Mot_right_backward,HIGH);
+void MonaV2::Right_mot_backward(int speed){
+	if(speed>255){
+		speed = 255; //Limit max speed to the 8 bit resolution
+	}
+	ledcWrite(Mot_rig_for_pwm, 0);
+	ledcWrite(Mot_rig_bac_pwm, speed);
 }
 
 void MonaV2::Right_mot_stop(void){
-	digitalWrite(Mot_right_forward,LOW);
-    digitalWrite(Mot_right_backward,LOW);
+	ledcWrite(Mot_rig_for_pwm, 0);
+	ledcWrite(Mot_rig_bac_pwm, 0);
 }
 //Left Motor
-void MonaV2::Left_mot_forward(void){
-	digitalWrite(Mot_left_forward,HIGH);
-    digitalWrite(Mot_left_backward,LOW);
+void MonaV2::Left_mot_forward(int speed){
+	if(speed>255){
+		speed = 255; //Limit max speed to the 8 bit resolution
+	}
+	ledcWrite(Mot_lef_for_pwm, speed);
+	ledcWrite(Mot_lef_bac_pwm, 0);
 }
 
-void MonaV2::Left_mot_backward(void){
-	digitalWrite(Mot_left_forward,LOW);
-    digitalWrite(Mot_left_backward,HIGH);
+void MonaV2::Left_mot_backward(int speed){
+	if(speed>255){
+		speed = 255; //Limit max speed to the 8 bit resolution
+	}
+	ledcWrite(Mot_lef_for_pwm, 0);
+	ledcWrite(Mot_lef_bac_pwm, speed);
 }
 void MonaV2::Left_mot_stop(void){
-	digitalWrite(Mot_left_forward,LOW);
-    digitalWrite(Mot_left_backward,LOW);
+	ledcWrite(Mot_lef_for_pwm, 0);
+	ledcWrite(Mot_lef_bac_pwm, 0);
 }
 
 //Both motors
-void MonaV2::Motors_forward(void){
-	Right_mot_forward();
-	Left_mot_forward();
+void MonaV2::Motors_forward(int speed){
+	Right_mot_forward(speed);
+	Left_mot_forward(speed);
 }
 
-void MonaV2::Motors_backward(void){
-	Right_mot_backward();
-	Left_mot_backward();
+void MonaV2::Motors_backward(int speed){
+	Right_mot_backward(speed);
+	Left_mot_backward(speed);
+}
+
+void MonaV2::Motors_spin_left(int speed){
+	Right_mot_forward(speed);
+	Left_mot_backward(speed);
+}
+
+void MonaV2::Motors_spin_right(int speed){
+	Right_mot_backward(speed);
+	Left_mot_forward(speed);
 }
 
 void MonaV2::Motors_stop(void){
