@@ -14,6 +14,9 @@ void setup()
 {
 	//Initialize the MonaV2 robot
 	MonaV2_init();
+	//After initialization, turn on IR so they can be used
+  	Enable_IR();
+  	delay(50);
 
 }
 
@@ -30,7 +33,7 @@ void loop(){
 		LED3_OFF();
 	}
 	//Move forward for half a second
-	Motors_forward();
+	Motors_forward(150);
 	delay(500);
 	//Stop motors
 	Motors_stop();
